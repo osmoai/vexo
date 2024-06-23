@@ -1,0 +1,7 @@
+smiles_inchikey	smiles STRING	STRING
+inchi_inchikey	smiles STRING	STRING
+canonical_smiles	smiles STRING	STRING
+iso_canonical_smiles	smiles STRING	STRING
+inchi_canonical_smiles	smiles STRING	STRING
+morgan_fingerprint	smiles STRING	JSON
+substructure_match	fragment_smiles STRING, smiles STRING	BOOL

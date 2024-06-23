@@ -1,0 +1,6 @@
+Flask==3.0.3
+pillow==10.3.0
+pytest==8.2.2
+nox==2024.4.15
+rdkit==2023.9.6
+waitress==3.0.0

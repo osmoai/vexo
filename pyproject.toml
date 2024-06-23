@@ -1,0 +1,10 @@
+[project]
+name = "vexo"
+version = "2024.07.01"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.scripts]
+main = "vexo:main"
