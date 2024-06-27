@@ -1,35 +1,33 @@
-import argparse
-import os
+import io
 
 import flask
-import waitress
 from rdkit import Chem
 
-import src.common.chemistry as chemistry
+from PIL import Image
+from rdkit import Chem
+from rdkit.Chem import Draw
 
-app = flask.Flask(__name__)
+def smiles_png(request):
+    # call rdkit to generate images
+    image_io = io.BytesIO()
+    smiles = request.path.lstrip('/')
+    mol = Chem.MolFromSmiles(smiles)
+    if mol:
+        img = Draw.MolToImage(mol)
+    else:
+        img = Image.new("RGB", (300, 300), (255, 255, 255))
 
-
-@app.route("/smiles/<path:smiles>")
-def smiles(smiles: str):
-    image_io = chemistry.smiles_png(smiles)
+    img.save(image_io, "PNG")
+    image_io.seek(0)
     return flask.send_file(image_io, mimetype="image/png")
 
 
-@app.route("/smiles/substructure/<path:query>")
-def smart_substructure(query: str):
+def smart_substructure(request):
     try:
+        query = request.path.lstrip('/')
         smiles, smart = query.split(",")
         mol = Chem.MolFromSmiles(smiles)
         fragment_mol = Chem.MolFromSmarts(smart)
         return flask.jsonify(mol.HasSubstructMatch(fragment_mol, useChirality=True))
     except Exception as e:
         return flask.abort(400, str(e))
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Vexo")
-    args = parser.parse_args()
-
-    port = int(os.getenv("PORT", "8080"))
-    waitress.serve(app, host="0.0.0.0", port=port, channel_timeout=3600)

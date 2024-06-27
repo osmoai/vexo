@@ -24,7 +24,7 @@ fi
 
 ## Create connection
 
-## Check if connection already exists 
+## Check if connection already exists
 
 bq show --location=US --format=prettyjson --connection "vexo-connection" > /dev/null 2>&1
 
@@ -50,7 +50,7 @@ echo "Connection vexo-connect service account: ${SERVICE_ACCOUNT}"
 
 PROJ=$(gcloud config list --format 'value(core.project)')
 
-####### Begin creating cloud functions  
+####### Begin creating cloud functions
 
 PERM="roles/cloudfunctions.invoker"
 
@@ -66,7 +66,7 @@ do
    gcloud beta functions deploy $fn_name \
       --quiet --gen2 --region "us-east1" --entry-point $fn_call --runtime python311 --trigger-http \
       --memory=$MEMORY --timeout=$TIMEOUT --max-instances=$MAX_INSTANCES  \
-      --update-labels package=vexo --update-labels function_type=remote_function --update-labels software_package=main
+      --update-labels package=vexo --update-labels function_type=remote_function --update-labels software_package=functions
 
    CLOUD_TRIGGER_URL=$(gcloud beta functions describe $fn_name --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
 

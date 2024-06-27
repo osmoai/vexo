@@ -1,26 +1,12 @@
-# this file is *not* meant to cover or endorse the use of nox or pytest or
-# testing in general,
-#
-#  It's meant to show the use of:
-#
-#  - check-manifest
-#     confirm items checked into vcs are in your sdist
-#  - readme_renderer (when using a reStructuredText README)
-#     confirms your long_description will render correctly on PyPI.
-#
-#  and also to help confirm pull requests to this project.
-
 import nox
 import os
 
-nox.options.sessions = ["lint"]
-
-# Define the minimal nox version required to run
+nox.options.sessions = ["black", "isort", "flake8", "tests-3.11"]
 nox.options.needs_version = ">= 2024.3.2"
 
 
 @nox.session
-def lint(session):
+def flake8(session):
     session.install("flake8")
     session.run(
         "flake8", "--max-line-length=160", "--exclude", ".nox,*.egg,build,data",
@@ -28,25 +14,28 @@ def lint(session):
     )
 
 
-@nox.session
-def build_and_check_dists(session):
-    session.install("build", "check-manifest >= 0.42", "twine")
-    # If your project uses README.rst, uncomment the following:
-    # session.install("readme_renderer")
+@nox.session(tags=["style", "fix"])
+def black(session):
+    session.install("black")
+    session.run("black", "vexo")
 
-    session.run("check-manifest", "--ignore", "noxfile.py,tests/**")
-    session.run("python", "-m", "build")
-    session.run("python", "-m", "twine", "check", "dist/*")
+
+@nox.session(tags=["style", "fix"])
+def isort(session):
+    session.install("isort")
+    session.run("isort", "vexo")
+
+
+@nox.session()
+def mypy(session):
+    session.env['PYTHONPATH'] = os.getcwd()
+    session.install("mypy")
+    session.install("-r", "requirements.txt")
+    session.run("mypy", "--ignore-missing-imports", "--no-namespace-packages", "--exclude=*site-packages*", "vexo")
 
 
 @nox.session(python=["3.8", "3.9", "3.10", "3.11", "3.12"])
 def tests(session):
+    session.env['PYTHONPATH'] = os.getcwd()
     session.install("-r", "requirements.txt")
-    build_and_check_dists(session)
-
-    generated_files = os.listdir("dist/")
-    generated_sdist = os.path.join("dist/", generated_files[1])
-
-    session.install(generated_sdist)
-
-    session.run("py.test", "tests/", *session.posargs)
+    session.run("py.test", "vexo/", *session.posargs)

@@ -98,7 +98,9 @@ def morgan_fingerprint(request):
     def fn(call):
         smiles = call[0]
         mol = Chem.MolFromSmiles(smiles)
-        fp = AllChem.GetMorganFingerprintAsBitVect(mol, useChirality=True, radius=2, nBits=2048)
+        fp = AllChem.GetMorganFingerprintAsBitVect(
+            mol, useChirality=True, radius=2, nBits=2048
+        )
         return DataStructs.BitVectToBinaryText(fp).hex()
 
     return _bq_fn(request, fn)
@@ -116,7 +118,7 @@ def inchi_canonical_smiles(request):
 
 
 def substructure_match(request):
-    '''Check if a fragment is a substructure of a molecule'''
+    """Check if a fragment is a substructure of a molecule"""
     try:
         return_value = []
         request_json = request.get_json()
@@ -130,7 +132,9 @@ def substructure_match(request):
             try:
                 mol = Chem.MolFromSmiles(smiles)
                 fragment_mol = Chem.MolFromSmarts(fragment_smiles)
-                return_value.append(mol.HasSubstructMatch(fragment_mol, useChirality=True))
+                return_value.append(
+                    mol.HasSubstructMatch(fragment_mol, useChirality=True)
+                )
 
             except Exception:
                 return_value.append(False)

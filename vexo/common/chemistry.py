@@ -1,9 +1,9 @@
 import functools
 import io
 
-from rdkit.Chem import Draw
-from rdkit import Chem
 from PIL import Image
+from rdkit import Chem
+from rdkit.Chem import Draw
 
 
 @functools.lru_cache(10_000)
