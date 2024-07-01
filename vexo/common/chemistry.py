@@ -19,3 +19,18 @@ def smiles_png(smiles: str):
     img.save(image_io, "PNG")
     image_io.seek(0)
     return image_io
+
+
+def canonicalize_smiles(smiles: str, isomeric: bool = False):
+    """Canonicalize SMILES string.
+    Args:
+        smiles: str, SMILES string.
+        isomeric: bool, include stereochemistry.
+    Returns:
+        str, canonical SMILES string.
+    Examples:
+        canonical_smiles("C1=CC=CC=C1")
+        canonical_smiles("C1=CC=CC=C1", isomeric=True)
+    """
+    mol = Chem.MolFromSmiles(smiles)
+    return Chem.MolToSmiles(mol, isomericSmiles=isomeric, canonical=True)
