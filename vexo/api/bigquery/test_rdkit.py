@@ -3,7 +3,7 @@ import json
 from rdkit import Chem
 from rdkit.Chem import AllChem, DataStructs
 
-from vexo.bigquery import functions
+from vexo.api.bigquery import rdkit
 
 
 class Request:
@@ -27,7 +27,7 @@ def test_iso_canonical_smiles():
             ["CCO/C=N/c1ccccc1"],
         ]
     )
-    resp = functions.iso_canonical_smiles(req)[0]
+    resp = rdkit.iso_canonical_smiles(req)[0]
     resp = json.loads(resp)
 
     assert resp["replies"] == [c[0] for c in req.get_json()["calls"]]
@@ -43,7 +43,7 @@ def test_canonical_smiles():
             ["CCO/C=N/c1ccccc1"],
         ]
     )
-    resp = functions.canonical_smiles(req)[0]
+    resp = rdkit.canonical_smiles(req)[0]
     resp = json.loads(resp)
 
     assert resp["replies"] == expected
@@ -68,7 +68,7 @@ def test_inchi_inchikey():
         "QFQQCCDAGARSEN-UHFFFAOYSA-N",
         "MIZGSAALSYARKU-UHFFFAOYSA-N",
     ]
-    resp = functions.inchi_inchikey(req)[0]
+    resp = rdkit.inchi_inchikey(req)[0]
     resp = json.loads(resp)
 
     assert resp["replies"] == expected
@@ -87,7 +87,7 @@ def test_smiles_inchikey():
         "QFQQCCDAGARSEN-UHFFFAOYSA-N",
         "MIZGSAALSYARKU-UHFFFAOYSA-N",
     ]
-    resp = functions.smiles_inchikey(req)[0]
+    resp = rdkit.smiles_inchikey(req)[0]
     resp = json.loads(resp)
 
     assert resp["replies"] == expected
@@ -112,7 +112,7 @@ def test_inchi_canonical_smiles():
         "CC1C(C)(C)C2=C(C3OC(C)(C)OC3CC2)C1(C)C",
         "CC1C(C)(C)C2=C(C(=O)CCC2)C1(C)C",
     ]
-    resp = functions.inchi_canonical_smiles(req)[0]
+    resp = rdkit.inchi_canonical_smiles(req)[0]
     resp = json.loads(resp)
 
     assert resp["replies"] == expected
@@ -128,7 +128,7 @@ def test_morgan_fingerprint():
     test_mols = [[Chem.MolFromSmiles(smiles[0])] for smiles in test_smiles]
 
     req = _make_request(test_smiles)
-    resp = functions.canonical_smiles(req)[0]
+    resp = rdkit.canonical_smiles(req)[0]
     resp = json.loads(resp)
 
     expected_fp = [
@@ -139,7 +139,7 @@ def test_morgan_fingerprint():
     ]
     expected = [DataStructs.BitVectToBinaryText(fp) for fp in expected_fp]
 
-    resp = functions.morgan_fingerprint(req)[0]
+    resp = rdkit.morgan_fingerprint(req)[0]
     resp = json.loads(resp)
 
     test_results = [bytes.fromhex(result) for result in resp["replies"]]
@@ -149,6 +149,6 @@ def test_morgan_fingerprint():
 
 def test_substructure_match():
     req = _make_request([["C", "CC1(C)[C@H]2C[C@@H](O)[C@@](C)(O)[C@H]1C2"]])
-    resp = functions.substructure_match(req)[0]
+    resp = rdkit.substructure_match(req)[0]
     resp = json.loads(resp)
     assert resp["replies"] == [True]
