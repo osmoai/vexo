@@ -5,6 +5,8 @@ import json
 from rdkit import Chem
 from rdkit.Chem import AllChem, DataStructs
 
+from vexo.common import chemistry
+
 
 def _is_valid_smiles(smi: str) -> bool:
     """Check if SMILES is valid"""
@@ -48,9 +50,7 @@ def canonical_smiles(request):
     def fn(call):
         smiles = call[0]
         if _is_valid_smiles(smiles):
-            mol = Chem.MolFromSmiles(smiles)
-            result = Chem.MolToSmiles(mol, isomericSmiles=False, canonical=True)
-            return result
+            return chemistry.canonicalize_smiles(smiles, isomeric=False)
         else:
             return ""
 
@@ -83,9 +83,7 @@ def iso_canonical_smiles(request):
     def fn(call):
         smiles = call[0]
         if _is_valid_smiles(smiles):
-            mol = Chem.MolFromSmiles(smiles)
-            result = Chem.MolToSmiles(mol, isomericSmiles=True, canonical=True)
-            return result
+            return chemistry.canonicalize_smiles(smiles, isomeric=True)
         else:
             return ""
 

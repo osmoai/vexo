@@ -1,11 +1,11 @@
 import pytest
 
-from vexo.server import server
+from vexo.api.server import rdkit
 
 
 @pytest.fixture()
 def client():
-    return server.app.test_client()
+    return rdkit.app.test_client()
 
 
 def test_smart_substructure(client):
