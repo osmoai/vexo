@@ -41,12 +41,34 @@ can also be a SMARTS pattern.
 SELECT vexo.substructure_match("c1ccccc1", "CCO/C=N/c1ccccc1")
 ```
 
-### Morgan Fingerprints
+## Sheets
 
-Generate the morgan finterprints for a smiles.
+The `install.sh` also installs a set of functions that are targetting more general HTML requests that also work directly in Google Sheets.  This can be very
+valuable if you are a Chemist that is comfortable with Sheets but not with coding.  It opens up most functionality available in rdkit to being called
+directly from a Sheet.
+
+The deployed Cloud Function has this pattern: `https://<REGION>-<PROJECT>.cloudfunctions.net/vexo-<FUNCTION>`. Where:
+1. <REGION> is the GCP region configured in your CLI.
+2. <PROJECT> is the GCP project configured in your CLI.
+3. <FUNCTION> is the vexo function installed from this repo.
+
+### Examples
+
+In the below examples we will use `us-east1` as the region and a placeholder project of `vexo`.
+
+
+#### Structure PNG
+
+This first example draws the structure of a molecule from the SMILES in a sheet.  The function has this pattern:
 
 ```
-SELECT vexo.morgan_fingerprint("CCO/C=N/c1ccccc1")
+=IMAGE(CONCAT("https://us-east1-vexo.cloudfunctions.net/vexo-smiles-png/", ENCODEURL(A2)), 1)
 ```
+
+where A2 is the cell that contains the smiles.
+
+Below is an example PNG of what you should expect:
+
+![Sheet PNG Molecule](images/structure_png_sheets.png "Sheet PNG")
 
 
