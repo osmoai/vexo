@@ -1,4 +1,6 @@
 Flask==3.0.3
+functions-framework==3.*
+google-cloud-bigquery==3.25.0
 pillow==10.3.0
 pytest==8.2.2
 nox==2024.4.15
