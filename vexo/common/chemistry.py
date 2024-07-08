@@ -1,4 +1,3 @@
-import functools
 import io
 
 from PIL import Image
@@ -6,9 +5,16 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 
 
-@functools.lru_cache(10_000)
 def smiles_png(smiles: str):
-    # call rdkit to generate images
+    """Render a PNG image of a molecule.
+    Args:
+        smiles: str, SMILES string.
+    Returns:
+        io.BytesIO: PNG image of the molecule.
+    Examples:
+        smiles_png("CCC")
+        smiles_png("C1=CC=CC=C1")
+    """
     image_io = io.BytesIO()
     mol = Chem.MolFromSmiles(smiles)
     if mol:

@@ -65,11 +65,6 @@ do
     --gen2 --region "us-east1" --entry-point $fn_call --runtime python311 --allow-unauthenticated --trigger-http \
     --memory=$MEMORY --timeout=$TIMEOUT --max-instances=$MAX_INSTANCES  \
     --update-labels package=vexo --update-labels function_type=remote_function --update-labels software_package=main
-
-    gcloud beta functions deploy $fn_name \
-    --gen2 --region "us-east1" --entry-point $fn_call --runtime python311 --allow-unauthenticated --trigger-http \
-    --memory=$MEMORY --timeout=$TIMEOUT --max-instances=$MAX_INSTANCES  \
-    --update-labels package=vexo --update-labels function_type=remote_function --update-labels software_package=main
 done < server_functions.csv
 
 while IFS=$'\t' read -r fn_call in_args out_args
