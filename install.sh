@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xo pipefail
 
+cd $(git rev-parse --show-toplevel)
+
 script_dir=$(dirname "$(realpath "$0")")
 cd "$script_dir" || exit
 
@@ -71,17 +73,20 @@ while IFS=$'\t' read -r fn_call in_args out_args
 do
     fn_name="vexo-${fn_call//_/-}"
     echo "Creating function \"$fn_name\" with call \"$fn_call\" and input args \"$in_args\" and output args \"$out_args\""
-
+    
     gcloud beta functions deploy $fn_name \
     --quiet --gen2 --region "us-east1" --entry-point $fn_call --runtime python311 --trigger-http \
     --memory=$MEMORY --timeout=$TIMEOUT --max-instances=$MAX_INSTANCES  \
     --update-labels package=vexo --update-labels function_type=remote_function --update-labels software_package=main
-
+    
     CLOUD_TRIGGER_URL=$(gcloud beta functions describe $fn_name --gen2 --region "us-east1" --format=json | jq -r '.serviceConfig.uri')
-
+    
     gcloud beta functions add-iam-policy-binding "$fn_name" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role=${PERM} --gen2
-
+    
     gcloud run services add-iam-policy-binding "$fn_name" --region "us-east1" --member=serviceAccount:${SERVICE_ACCOUNT} --role="roles/run.invoker"
-
+    
     bq query --use_legacy_sql=false --parameter="url::${CLOUD_TRIGGER_URL}" 'CREATE or REPLACE FUNCTION vexo.'$fn_call'('$in_args') RETURNS '$out_args' REMOTE WITH CONNECTION `us.vexo-connection` OPTIONS (endpoint = @url, max_batching_rows = 2500)'
 done < bigquery_functions.csv
+
+# Add the pure SQL math functions
+PYTHONPATH=. python -m vexo.sql.bigquery.functions
