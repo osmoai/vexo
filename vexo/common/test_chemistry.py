@@ -1,3 +1,5 @@
+from rdkit import Chem
+
 from vexo.common import chemistry
 
 
@@ -8,4 +10,5 @@ def test_smiles_png():
 
 def test_canonicalize_smiles():
     smiles = "C1=CC=CC=C1"
-    assert chemistry.canonicalize_smiles(smiles) == "c1ccccc1"
+    mol = Chem.MolFromSmiles(smiles)
+    assert chemistry.canonicalize_smiles(mol) == "c1ccccc1"

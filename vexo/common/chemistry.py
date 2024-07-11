@@ -1,8 +1,18 @@
+import functools
 import io
 
 from PIL import Image
 from rdkit import Chem
 from rdkit.Chem import Draw
+from rdkit.Chem.MolStandardize import rdMolStandardize
+
+
+@functools.cache
+def _tautomer_enumeration():
+    enumerator = rdMolStandardize.TautomerEnumerator()
+    enumerator.SetRemoveSp3Stereo(False)
+    enumerator.SetRemoveBondStereo(False)
+    return enumerator
 
 
 def smiles_png(smiles: str):
@@ -27,16 +37,14 @@ def smiles_png(smiles: str):
     return image_io
 
 
-def canonicalize_smiles(smiles: str, isomeric: bool = False):
+def canonicalize_smiles(mol: Chem.Mol, isomeric: bool = False) -> str:
     """Canonicalize SMILES string.
     Args:
-        smiles: str, SMILES string.
+        mol: Mol, RDKit molecule.
         isomeric: bool, include stereochemistry.
     Returns:
         str, canonical SMILES string.
-    Examples:
-        canonical_smiles("C1=CC=CC=C1")
-        canonical_smiles("C1=CC=CC=C1", isomeric=True)
     """
-    mol = Chem.MolFromSmiles(smiles)
+    enumerator = _tautomer_enumeration()
+    mol = enumerator.Canonicalize(mol)
     return Chem.MolToSmiles(mol, isomericSmiles=isomeric, canonical=True)
