@@ -19,6 +19,12 @@ def _make_request(calls):
 
 
 def test_iso_canonical_smiles():
+    expected = [
+        "C",
+        "CC1(C)[C@@H]2C[C@@H](O)[C@@](C)(O)[C@H]1C2",
+        "Cc1cc(=O)[nH]c(C)n1",
+        "CCO/C=N/c1ccccc1",
+    ]
     req = _make_request(
         [
             ["C"],
@@ -30,11 +36,16 @@ def test_iso_canonical_smiles():
     resp = rdkit.iso_canonical_smiles(req)[0]
     resp = json.loads(resp)
 
-    assert resp["replies"] == [c[0] for c in req.get_json()["calls"]]
+    assert resp["replies"] == expected
 
 
 def test_canonical_smiles():
-    expected = ["C", "CC1(C)C2CC(O)C(C)(O)C1C2", "Cc1cc(O)nc(C)n1", "CCOC=Nc1ccccc1"]
+    expected = [
+        "C",
+        "CC1(C)C2CC(O)C(C)(O)C1C2",
+        "Cc1cc(=O)[nH]c(C)n1",
+        "CCOC=Nc1ccccc1",
+    ]
     req = _make_request(
         [
             ["C"],

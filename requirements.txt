@@ -5,6 +5,6 @@ pillow==10.3.0
 pytest==8.2.2
 nox==2024.4.15
 numpy==1.26.4
-rdkit==2023.9.6
+rdkit==2024.3.3
 types-waitress~=2.1.4.20240106
 waitress==3.0.0

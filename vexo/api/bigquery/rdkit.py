@@ -35,12 +35,14 @@ def _bq_fn(request, fn):
         for call in calls:
             try:
                 return_value.append(fn(call))
-            except Exception:
+            except Exception as e:
+                print(f"ERROR for request {call}: {e}")
                 return_value.append("")
 
         return_json = json.dumps({"replies": return_value}), 200
         return return_json
-    except Exception:
+    except Exception as e:
+        print(f"ERROR calling function: {e}")
         return json.dumps({"errorMessage": "something unexpected in input"}), 400
 
 
@@ -50,7 +52,8 @@ def canonical_smiles(request):
     def fn(call):
         smiles = call[0]
         if _is_valid_smiles(smiles):
-            return chemistry.canonicalize_smiles(smiles, isomeric=False)
+            mol = Chem.MolFromSmiles(smiles)
+            return chemistry.canonicalize_smiles(mol, isomeric=False)
         else:
             return ""
 
@@ -83,7 +86,8 @@ def iso_canonical_smiles(request):
     def fn(call):
         smiles = call[0]
         if _is_valid_smiles(smiles):
-            return chemistry.canonicalize_smiles(smiles, isomeric=True)
+            mol = Chem.MolFromSmiles(smiles)
+            return chemistry.canonicalize_smiles(mol, isomeric=True)
         else:
             return ""
 
@@ -110,7 +114,7 @@ def inchi_canonical_smiles(request):
     def fn(call):
         inchi = call[0]
         mol = Chem.MolFromInchi(inchi)
-        return Chem.MolToSmiles(mol, isomericSmiles=True, canonical=True)
+        return chemistry.canonicalize_smiles(mol, isomeric=True)
 
     return _bq_fn(request, fn)
 
