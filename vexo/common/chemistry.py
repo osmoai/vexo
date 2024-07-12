@@ -9,6 +9,7 @@ from rdkit.Chem.MolStandardize import rdMolStandardize
 
 @functools.cache
 def _tautomer_enumeration():
+    """Create a standard tautomer enumerator."""
     enumerator = rdMolStandardize.TautomerEnumerator()
     enumerator.SetRemoveSp3Stereo(False)
     enumerator.SetRemoveBondStereo(False)
